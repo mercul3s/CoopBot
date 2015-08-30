@@ -1,0 +1,74 @@
+<html>
+    <head>
+        <link href='https://fonts.googleapis.com/css?family=Poller+One|Sonsie+One' rel='stylesheet' type='text/css'>
+        <style type="text/css">
+            /* make keyframes that tell the start state and the end state of our object */
+            @-webkit-keyframes fadeIn { from { opacity:0; } to { opacity:.5; } }
+            @-moz-keyframes fadeIn { from { opacity:0; } to { opacity:.5; } }
+            @keyframes fadeIn { from { opacity:0; } to { opacity:.5 ; } }
+
+            .fade-in {
+                opacity:0;  /* make things invisible upon start */
+                -webkit-animation:fadeIn ease-in 1;  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+                -moz-animation:fadeIn ease-in 1;
+                animation:fadeIn ease-in 1;
+
+                -webkit-animation-fill-mode:forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+                -moz-animation-fill-mode:forwards;
+                animation-fill-mode:forwards;
+
+                -webkit-animation-duration:3s;
+                -moz-animation-duration:3s;
+                animation-duration:3s;
+            }
+
+            .fade-in {
+                opacity:0;  /* make things invisible upon start */
+                -webkit-animation:fadeIn ease-in 1;  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+                -moz-animation:fadeIn ease-in 1;
+                animation:fadeIn ease-in 1;
+
+                -webkit-animation-fill-mode:forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+                -moz-animation-fill-mode:forwards;
+                animation-fill-mode:forwards;
+
+                -webkit-animation-duration:4s;
+                -moz-animation-duration:4s;
+                animation-duration:4s;
+            }
+
+            .text-box {
+                position: fixed; 
+                left: 30%; 
+                top: 70%; 
+                z-index: 1; 
+                width: 40%; 
+                height: 15%; 
+                background: #000; 
+                opacity: 0;
+            }
+
+            .fade-in.text-box {
+                -webkit-animation-delay: 4s;
+                -moz-animation-delay: 4s;
+                animation-delay: 4s;
+            }
+
+        </style>
+    </head>
+    <body style="background-color: #000">
+        <div class="fade-in text-box">
+            <p style="font-family: 'Sonsie One', cursive; color: #fff; font-size: x-large; text-align: center; margin-top: 5%; opacity: 100%;">The Internet of Chickens</h5>
+        </div>
+        
+        <div style="position: fixed; z-index: -99; width: 100%; height: 100%; left: 0px; top: 0px;">
+           
+            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLcJ0TlxxmyJriTjkzu55ySUFkw8D22HVm&autoplay=0&loop=1" frameborder="0" allowfullscreen></iframe>  
+<!--             <iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLcJ0TlxxmyJriTjkzu55ySUFkw8D22HVm&autoplay=1&loop=1" frameborder="0" allowfullscreen></iframe> -->
+            <!-- <iframe frameborder="0" height="100%" width="100%" 
+                src="https://youtube.com/embed/fbtT0X_7r_8?autoplay=1&controls=0&showinfo=0&autohide=1"
+                style="margin: none; padding: none; border: none;">
+            </iframe> -->
+        </div>
+    </body>
+</html>
