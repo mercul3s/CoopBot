@@ -1,29 +1,33 @@
-from sqlalchemy import Column, Integer, String, Time, create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from datetime import datetime
+from calendar import timegm
+from pymongo import MongoClient
 
-engine = create_engine('sqlite:///:memory:', echo=True)
+# one collection for all events
+# one doc for each chicken, door, and nesting box
+# update 
 
-Base = declarative_base()
+mongo_client = MongoClient()
+database     = mongo_client.ioc
+collection   = database.events
 
-class Chicken(Base):
-	__tablename__ = "chickens"
-	id = Column(Integer)
-	chicken_id_tag = Column(Integer)
-	name = Column(String)
+class Chicken(object):
+    
+    def __init__(self, name, rfid_tag, dob):
+        self.name      = name
+        self.rfid_tag  = rfid_tag
+        self.dob       = dob
 
-	def __repr__(self):
-        return "<Chicken(name='%s', chicken_id_tag='%s')>" % (
-                             self.name, self.chicken_id_tag)
+    def create_doc(self):
+        return {
+                "name" : self.name, 
+                "dob" : self.dob, 
+                "rfid_tag" : self.rfid_tag, 
+                "events" : {}
+                }
 
-class DoorEvents(Base):
-	__tablename__ = "door_events"
-	id = Column(Integer)
-	chicken_id_tag = Column(Integer)
-	event = Column(String)
-	timestamp = Column(Time)
 
-class NestEvents(Base):
-	__tablename__ = "nesting_box_events"
-	id = Column(Integer)
-	chicken_id_tag = Column(Integer)
-	timestamp = Column(Time)
+
+
+def lay_egg(chicken, collection, event):
+    # update document with new chicken egg event
+    # collection.update(chicken.name)
