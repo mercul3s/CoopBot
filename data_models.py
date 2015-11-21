@@ -12,7 +12,7 @@ collection   = database.events
 
 
 class Chicken(object):
-    
+    """Basic chicken object"""
     def __init__(self, name, rfid_tag, dob):
         self.name      = name
         self.rfid_tag  = rfid_tag
@@ -33,3 +33,9 @@ class Chicken(object):
     # make sure document exists
     # collection.update(chicken.name)
 
+class ClassName(object):
+    """docstring for ClassName"""
+    def __init__(self, arg):
+        super(ClassName, self).__init__()
+        self.arg = arg
+        
