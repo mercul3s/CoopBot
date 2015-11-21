@@ -4,11 +4,12 @@ from pymongo import MongoClient
 
 # one collection for all events
 # one doc for each chicken, door, and nesting box
-# update 
+# update doc with each event, stored by month
 
 mongo_client = MongoClient()
 database     = mongo_client.ioc
 collection   = database.events
+
 
 class Chicken(object):
     
@@ -17,7 +18,7 @@ class Chicken(object):
         self.rfid_tag  = rfid_tag
         self.dob       = dob
 
-    def create_doc(self):
+    def json(self):
         return {
                 "name" : self.name, 
                 "dob" : self.dob, 
@@ -25,9 +26,10 @@ class Chicken(object):
                 "events" : {}
                 }
 
-
-
-
-def lay_egg(chicken, collection, event):
+    def lay_egg(self, collection, timestamp):
+        collection.update(self.name)
+        pass
     # update document with new chicken egg event
+    # make sure document exists
     # collection.update(chicken.name)
+
