@@ -66,9 +66,13 @@ void tempColor(float temperature) {
   }
   else if (temperature <= 94.99 && temperature > 80.00) {
     // Orange/Yellow
-    digitalWrite(redLedPin, HIGH);
-    digitalWrite(grnLedPin, HIGH);
-    digitalWrite(bluLedPin, LOW);
+    // color(237,120,6)
+    analogWrite(redLedPin, 237);
+    analogWrite(grnLedPin, 120);
+    analogWrite(bluLedPin, 6);
+//    digitalWrite(redLedPin, HIGH);
+//    digitalWrite(grnLedPin, HIGH);
+//    digitalWrite(bluLedPin, LOW);
     
   }
   else if (temperature <= 79.99 and temperature > 60.00) {
