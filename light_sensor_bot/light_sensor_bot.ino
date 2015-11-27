@@ -36,7 +36,7 @@ void closeCoopDoor() {
 }
 
 void sendValues() {
-  // nothing to see here
+  // send temp, light, and door open/close values to event collector
 }
 
 float getTempSensorVoltage(int pin) {
@@ -49,9 +49,9 @@ float formatTempF(float tempVoltage) {
   return degreesF;
 }
 
-void checkLastTempVal(float currentTempF) {
+float checkLastTempVal(float currentTempF) {
    if (abs(currentTempF - lastTempF) >= 1) {
-    lastTempF = currentTempF;
+    return currentTempF;
    }
 }
 
@@ -59,52 +59,45 @@ void tempColor(float temperature) {
 
   if (temperature >= 95.0) {
     // Red
-    digitalWrite(redLedPin, HIGH);
-    digitalWrite(grnLedPin, LOW);
-    digitalWrite(bluLedPin, LOW);
-   
+    analogWrite(redLedPin, 255);
+    analogWrite(grnLedPin, 0);
+    analogWrite(bluLedPin, 0);
   }
   else if (temperature <= 94.99 && temperature > 80.00) {
     // Orange/Yellow
-    // color(237,120,6)
     analogWrite(redLedPin, 237);
     analogWrite(grnLedPin, 120);
     analogWrite(bluLedPin, 6);
-//    digitalWrite(redLedPin, HIGH);
-//    digitalWrite(grnLedPin, HIGH);
-//    digitalWrite(bluLedPin, LOW);
-    
   }
   else if (temperature <= 79.99 and temperature > 60.00) {
     // Green
-    digitalWrite(redLedPin, LOW);
-    digitalWrite(grnLedPin, HIGH);
-    digitalWrite(bluLedPin, LOW);
-    
+    analogWrite(redLedPin, 0);
+    analogWrite(grnLedPin, 255);
+    analogWrite(bluLedPin, 0);
   }
   else if (temperature <= 59.99 and temperature > 40.00) {
-    // Purple (turn red and blue on):
-    digitalWrite(redLedPin, HIGH);
-    digitalWrite(grnLedPin, LOW);
-    digitalWrite(bluLedPin, HIGH);
+    // Purple
+    analogWrite(redLedPin, 255);
+    analogWrite(grnLedPin, 0);
+    analogWrite(bluLedPin, 255);
   }
   else if (temperature <= 39.99 and temperature > 32.50) {
     // Blue
-    digitalWrite(redLedPin, LOW);
-    digitalWrite(grnLedPin, LOW);
-    digitalWrite(bluLedPin, HIGH);
+    analogWrite(redLedPin, 0);
+    analogWrite(grnLedPin, 0);
+    analogWrite(bluLedPin, 255);
   }
   else if (temperature <= 32.49) {
     // White
-    digitalWrite(redLedPin, HIGH);
-    digitalWrite(grnLedPin, HIGH);
-    digitalWrite(bluLedPin, HIGH);
+    analogWrite(redLedPin, 255);
+    analogWrite(grnLedPin, 255);
+    analogWrite(bluLedPin, 255);
   }
   else {
     // turn all off
-    digitalWrite(redLedPin, LOW);
-    digitalWrite(grnLedPin, LOW);
-    digitalWrite(bluLedPin, LOW);
+    analogWrite(redLedPin, 0);
+    analogWrite(grnLedPin, 0);
+    analogWrite(bluLedPin, 0);
   }
 }
 
@@ -124,7 +117,7 @@ void loop() {
   tempLevel = getTempSensorVoltage(tempSensorPin);
   degreesF = formatTempF(tempLevel);
   tempColor(degreesF);
-  checkLastTempVal(degreesF);
+  lastTempF = checkLastTempVal(degreesF);
   
   // loop timing in arduino: at the start of your loop (sensor read), you
   // set a timer to be milliseconds, and it starts counting down for you.
