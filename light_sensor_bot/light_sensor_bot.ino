@@ -1,3 +1,5 @@
+//#include <Time.h>
+
 // Sensor pins 
 const int lightSensorPin = 0;
 const int tempSensorPin = 1;
@@ -13,7 +15,7 @@ int lastLightLevel;
 float tempLevel, lastTempF, degreesF;
 
 // Timer for loop timing/delay
-unsigned long timer = 60000;
+unsigned long timer;
 
 int tuneLightLevel(int sensorValue) {
   if (sensorValue < low) {
@@ -26,7 +28,11 @@ int tuneLightLevel(int sensorValue) {
   lightLevel = constrain(lightLevel, 0, 255);
   return lightLevel;
 }
-
+//
+//void printDateTime() {
+//  Serial.print("Current time: ");
+//  Serial.println(now());
+//}
 void openCoopDoor() {
   // nothing to see here
 }
@@ -124,13 +130,15 @@ void loop() {
   // you keep checking that timer until it exceeds a value, then read your
   // sensor and start your timer again.
   // timer = millis
-  Serial.println("Light Level Voltage");
+  Serial.print("Light Level Voltage:    ");
   Serial.println(lightLevel);
-  Serial.println("Temp Sensor Voltage");
+  Serial.print("Temp Sensor Voltage:    ");
   Serial.println(tempLevel);
-  Serial.println("Temperature in Degrees: ");
+  Serial.print("Temperature in Degrees: ");
   Serial.println(degreesF);
-  
+  Serial.print("Time: ");
+  timer = millis();
+  Serial.println(timer);
   lightLevel = tuneLightLevel(lightLevel);
   delay(10000);
 }
