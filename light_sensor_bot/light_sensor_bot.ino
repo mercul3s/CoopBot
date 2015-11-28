@@ -6,6 +6,7 @@ const int tempSensorPin = 1;
 const int redLedPin = 9;
 const int grnLedPin = 10;
 const int bluLedPin = 11;
+const unsigned long timeDelay = 60000;
 
 // Variables for sensor readings
 int lightLevel, high = 1023, low = 0;
@@ -131,7 +132,7 @@ void setup() {
 }
 
 void loop() {
-  if (millis() - timer >= 10000) {
+  if (millis() - timer >= timeDelay) {
     readSensors();
     timer = millis();
   }
