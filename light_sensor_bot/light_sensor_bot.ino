@@ -1,5 +1,3 @@
-//#include <Time.h>
-
 // Sensor pins 
 const int lightSensorPin = 0;
 const int tempSensorPin = 1;
@@ -28,11 +26,7 @@ int tuneLightLevel(int sensorValue) {
   lightLevel = constrain(lightLevel, 0, 255);
   return lightLevel;
 }
-//
-//void printDateTime() {
-//  Serial.print("Current time: ");
-//  Serial.println(now());
-//}
+
 void openCoopDoor() {
   // nothing to see here
 }
@@ -107,18 +101,8 @@ void tempColor(float temperature) {
   }
 }
 
-void setup() {
-  pinMode(redLedPin, OUTPUT);
-  pinMode(grnLedPin, OUTPUT);
-  pinMode(bluLedPin, OUTPUT);
-  Serial.begin(9600);
-}
-
-void loop() {
+void readSensors() {
   // Read photo sensor every minute, and format the value for LED output.
-  // If there is a change in temp greater than 1 degree, set it to lastTempF
-  // Log this value later.
-  // Need to get a good baseline of light/dark values for opening coop door
   lightLevel = analogRead(lightSensorPin);
   tempLevel = getTempSensorVoltage(tempSensorPin);
   degreesF = formatTempF(tempLevel);
@@ -136,11 +120,21 @@ void loop() {
   Serial.println(tempLevel);
   Serial.print("Temperature in Degrees: ");
   Serial.println(degreesF);
-  Serial.print("Time: ");
-  timer = millis();
-  Serial.println(timer);
   lightLevel = tuneLightLevel(lightLevel);
-  delay(10000);
+}
+
+void setup() {
+  pinMode(redLedPin, OUTPUT);
+  pinMode(grnLedPin, OUTPUT);
+  pinMode(bluLedPin, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  if (millis() - timer >= 10000) {
+    readSensors();
+    timer = millis();
+  }
 }
 
 
