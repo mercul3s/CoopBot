@@ -160,6 +160,7 @@ void readSensors() {
   // you keep checking that timer until it exceeds a value, then read your
   // sensor and start your timer again.
   // timer = millis
+  Serial.println();
   Serial.print("Light Level Voltage:    ");
   Serial.println(lightLevel);
   Serial.print("Temp Sensor Voltage:    ");
@@ -178,9 +179,9 @@ void setup() {
 }
 
 void loop() {
+  readRequestResponse();
   if (millis() - timer >= timeDelay) {
     readSensors();
-    readRequestResponse();
     timer = millis();
   }
 }
