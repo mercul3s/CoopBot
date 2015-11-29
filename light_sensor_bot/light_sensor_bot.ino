@@ -1,17 +1,28 @@
+#include <Dhcp.h>
+#include <Dns.h>
+#include <Ethernet.h>
+#include <EthernetClient.h>
+#include <EthernetServer.h>
+#include <EthernetUdp.h>
+
 // Sensor pins 
 const int lightSensorPin = 0;
 const int tempSensorPin = 1;
 
 // LED pins for temperature visualization
-const int redLedPin = 9;
-const int grnLedPin = 10;
-const int bluLedPin = 11;
-const unsigned long timeDelay = 60000;
+const int redLedPin = 3;
+const int grnLedPin = 5;
+const int bluLedPin = 6;
+const unsigned long timeDelay = 10000;
 
 // Variables for sensor readings
 int lightLevel, high = 1023, low = 0;
 int lastLightLevel;
 float tempLevel, lastTempF, degreesF;
+byte mac[] = { 0x90, 0xA2, 0xDA, 0x0F, 0x60, 0x8E };
+char server[] = "www.google.com";
+IPAddress ip(192, 168, 75, 246);
+EthernetClient client;
 
 // Timer for loop timing/delay
 unsigned long timer;
@@ -34,6 +45,40 @@ void openCoopDoor() {
 
 void closeCoopDoor() {
   // nothing to see here  
+}
+
+void setupEthernet() {
+  if (Ethernet.begin(mac) == 0) {
+    Serial.println("Failed to configure Ethernet using DHCP");
+    Ethernet.begin(mac, ip);
+  }
+  // use micros timer for this
+  delay(1000);
+  Serial.println("Connecting to Ethernet...");
+
+  if (client.connect(server, 80)) {
+    Serial.println("connected");
+    client.println("GET /search?q=arduino HTTP/1.1");
+    client.println("Host: www.google.com");
+    client.println("Connection: close");
+    client.println();
+  }
+  else {
+    Serial.println("connection failed");
+  }
+}
+
+void readRequestResponse() {
+  if (client.available()) {
+    char c = client.read();
+    Serial.print(c);  
+  }
+
+  if (!client.connected()) {
+    Serial.println();
+    Serial.println("Disconnecting");
+    client.stop();
+  }
 }
 
 void sendValues() {
@@ -129,11 +174,13 @@ void setup() {
   pinMode(grnLedPin, OUTPUT);
   pinMode(bluLedPin, OUTPUT);
   Serial.begin(9600);
+  setupEthernet();
 }
 
 void loop() {
   if (millis() - timer >= timeDelay) {
     readSensors();
+    readRequestResponse();
     timer = millis();
   }
 }
