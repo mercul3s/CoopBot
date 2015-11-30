@@ -13,32 +13,23 @@ const int tempSensorPin = 1;
 const int redLedPin = 3;
 const int grnLedPin = 5;
 const int bluLedPin = 6;
-const unsigned long timeDelay = 10000;
 
 // Variables for sensor readings
 int lightLevel, high = 1023, low = 0;
 int lastLightLevel;
 float tempLevel, lastTempF, degreesF;
+
+// Ethernet Shield vars
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x0F, 0x60, 0x8E };
 char server[] = "www.google.com";
 IPAddress ip(192, 168, 75, 246);
 EthernetClient client;
 
-// Timer for loop timing/delay
+// Timers for loop timing/delay
 unsigned long timer;
+const unsigned long timeDelay = 10000;
 
-int tuneLightLevel(int sensorValue) {
-  if (sensorValue < low) {
-    low = lightLevel;
-  }
-  if (sensorValue > high) {
-    high = lightLevel;
-  }
-  lightLevel = map(lightLevel, low+30, high-30, 0, 255);
-  lightLevel = constrain(lightLevel, 0, 255);
-  return lightLevel;
-}
-
+// Motor/Door functions
 void openCoopDoor() {
   // nothing to see here
 }
@@ -47,6 +38,7 @@ void closeCoopDoor() {
   // nothing to see here  
 }
 
+// HTTP Request and Ethernet Functions
 void setupEthernet() {
   if (Ethernet.begin(mac) == 0) {
     Serial.println("Failed to configure Ethernet using DHCP");
@@ -85,6 +77,7 @@ void sendValues() {
   // send temp, light, and door open/close values to event collector
 }
 
+// Temp Sensor functions
 float getTempSensorVoltage(int pin) {
   return (analogRead(pin) * 0.004882814);
 }
@@ -101,6 +94,21 @@ float checkLastTempVal(float currentTempF) {
    }
 }
 
+// Normalize the light level to be between 0 and 255 for output to LED
+// (probably can get rid of this function)
+int tuneLightLevel(int sensorValue) {
+  if (sensorValue < low) {
+    low = lightLevel;
+  }
+  if (sensorValue > high) {
+    high = lightLevel;
+  }
+  lightLevel = map(lightLevel, low+30, high-30, 0, 255);
+  lightLevel = constrain(lightLevel, 0, 255);
+  return lightLevel;
+}
+
+// Decision tree for temperature LED status light
 void tempColor(float temperature) {
 
   if (temperature >= 95.0) {
@@ -167,19 +175,21 @@ void readSensors() {
   Serial.println(tempLevel);
   Serial.print("Temperature in Degrees: ");
   Serial.println(degreesF);
-  lightLevel = tuneLightLevel(lightLevel);
+  // lightLevel = tuneLightLevel(lightLevel);
 }
 
+// Precursor to magic
 void setup() {
   pinMode(redLedPin, OUTPUT);
   pinMode(grnLedPin, OUTPUT);
   pinMode(bluLedPin, OUTPUT);
   Serial.begin(9600);
-  setupEthernet();
+//  setupEthernet();
 }
 
+// This is where the magic happens
 void loop() {
-  readRequestResponse();
+//  readRequestResponse();
   if (millis() - timer >= timeDelay) {
     readSensors();
     timer = millis();
