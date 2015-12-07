@@ -1,9 +1,5 @@
-#include <Dhcp.h>
-#include <Dns.h>
+#include <SPI.h>
 #include <Ethernet.h>
-#include <EthernetClient.h>
-#include <EthernetServer.h>
-#include <EthernetUdp.h>
 
 // Sensor pins 
 const int lightSensorPin = 0;
@@ -21,13 +17,21 @@ float tempLevel, lastTempF, degreesF;
 
 // Ethernet Shield vars
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x0F, 0x60, 0x8E };
-char server[] = "www.google.com";
+char server[] = "httpbin.org";
+//int serverPort = 80;
+//char pageName[] = "/r4sgsfr4";
+
 IPAddress ip(192, 168, 75, 246);
 EthernetClient client;
 
 // Timers for loop timing/delay
 unsigned long timer;
 const unsigned long timeDelay = 10000;
+
+char params[40];
+#define delayMillis 30000Ul
+unsigned long thisMillis = 0;
+unsigned long lastMillis = 0;
 
 // Motor/Door functions
 void openCoopDoor() {
@@ -40,41 +44,61 @@ void closeCoopDoor() {
 
 // HTTP Request and Ethernet Functions
 void setupEthernet() {
+  Serial.print(F("Starting ethernet..."));
   if (Ethernet.begin(mac) == 0) {
-    Serial.println("Failed to configure Ethernet using DHCP");
+    Serial.println(F("Failed to configure Ethernet using DHCP"));
     Ethernet.begin(mac, ip);
   }
-  // use micros timer for this
-  delay(1000);
-  Serial.println("Connecting to Ethernet...");
-
-  if (client.connect(server, 80)) {
-    Serial.println("connected");
-    client.println("GET /search?q=arduino HTTP/1.1");
-    client.println("Host: www.google.com");
-    client.println("Connection: close");
-    client.println();
-  }
   else {
-    Serial.println("connection failed");
-  }
-}
-
-void readRequestResponse() {
-  if (client.available()) {
-    char c = client.read();
-    Serial.print(c);  
-  }
-
-  if (!client.connected()) {
-    Serial.println();
-    Serial.println("Disconnecting");
-    client.stop();
+    Serial.print("IP Address: ");
+    Serial.println(Ethernet.localIP());
+    delay(1000);
+    Serial.println("Ready");
   }
 }
 
 void sendValues() {
   // send temp, light, and door open/close values to event collector
+//  thisMillis = millis();
+//  if(thisMillis - lastMillis > delayMillis) {
+//    lastMillis = thisMillis;
+//    sprintf(params, "chickens", "are great");
+//    if(!postPage(server,serverPort,pageName,params)) {
+//      Serial.print(F("Failed to post"));
+//    }
+//    else {
+//      Serial.print(F("Pass"));
+//      
+//    }
+//  }
+}
+
+byte postData() {
+  int inChar;
+  char outBuf[64];
+
+  Serial.print(F("connecting..."));
+
+  if(client.connect(server,80)) {
+    client.println("POST /status/418 HTTP/1.1");
+    client.print("Host: ");
+    client.println(server);
+    client.println("User-Agent: Arduino/1.0");
+    client.println("Connection: close");
+    client.println();
+  }
+  else {
+    Serial.println(F("Connection Failed"));
+  }
+
+  while (client.connected()) {
+    if (client.available()) {
+      char c = client.read();
+      Serial.print(c);
+    }
+  }
+  Serial.println();
+  client.stop();
 }
 
 // Temp Sensor functions
@@ -184,14 +208,15 @@ void setup() {
   pinMode(grnLedPin, OUTPUT);
   pinMode(bluLedPin, OUTPUT);
   Serial.begin(9600);
-//  setupEthernet();
+  setupEthernet();
 }
 
 // This is where the magic happens
 void loop() {
-//  readRequestResponse();
   if (millis() - timer >= timeDelay) {
     readSensors();
+    postData();
+//    sendValues();
     timer = millis();
   }
 }
