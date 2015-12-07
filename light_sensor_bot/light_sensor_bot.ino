@@ -20,7 +20,9 @@ byte mac[] = { 0x90, 0xA2, 0xDA, 0x0F, 0x60, 0x8E };
 char server[] = "requestb.in";
 //int serverPort = 80;
 //char pageName[] = "/r4sgsfr4";
-String data = "chicken=Drumstick";
+char sensorData[128];
+char tempData[10];
+String testData = "chicken=Drumstick";
 
 IPAddress ip(192, 168, 75, 246);
 EthernetClient client;
@@ -58,28 +60,9 @@ void setupEthernet() {
   }
 }
 
-void sendValues() {
-  // send temp, light, and door open/close values to event collector
-//  thisMillis = millis();
-//  if(thisMillis - lastMillis > delayMillis) {
-//    lastMillis = thisMillis;
-//    sprintf(params, "chickens", "are great");
-//    if(!postPage(server,serverPort,pageName,params)) {
-//      Serial.print(F("Failed to post"));
-//    }
-//    else {
-//      Serial.print(F("Pass"));
-//      
-//    }
-//  }
-}
-
-byte postData() {
-  int inChar;
-  char outBuf[64];
-
+byte postData(String data) {
   Serial.print(F("connecting..."));
-
+  
   if(client.connect(server,80)) {
     client.println("POST /r4sgsfr4 HTTP/1.1");
     client.print("Host: ");
@@ -116,24 +99,18 @@ float formatTempF(float tempVoltage) {
   return degreesF;
 }
 
-float checkLastTempVal(float currentTempF) {
+void checkLastTempVal(float currentTempF) {
    if (abs(currentTempF - lastTempF) >= 1) {
-    return currentTempF;
+    lastTempF = currentTempF;
+    //  dtostrf(floatVar, minStringWidthIncDecimalPoint, numVarsAfterDecimal, charBuf);
+    dtostrf(lastTempF, 5, 2, tempData);
+    Serial.println(tempData);
+    printf(sensorData,"temperature=",tempData);
+    postData(sensorData);
    }
-}
-
-// Normalize the light level to be between 0 and 255 for output to LED
-// (probably can get rid of this function)
-int tuneLightLevel(int sensorValue) {
-  if (sensorValue < low) {
-    low = lightLevel;
-  }
-  if (sensorValue > high) {
-    high = lightLevel;
-  }
-  lightLevel = map(lightLevel, low+30, high-30, 0, 255);
-  lightLevel = constrain(lightLevel, 0, 255);
-  return lightLevel;
+    Serial.print("Last temp: ");
+    Serial.println(lastTempF);\
+    Serial.println(sensorData);
 }
 
 // Decision tree for temperature LED status light
@@ -189,7 +166,7 @@ void readSensors() {
   tempLevel = getTempSensorVoltage(tempSensorPin);
   degreesF = formatTempF(tempLevel);
   tempColor(degreesF);
-  lastTempF = checkLastTempVal(degreesF);
+  checkLastTempVal(degreesF);
   
   // loop timing in arduino: at the start of your loop (sensor read), you
   // set a timer to be milliseconds, and it starts counting down for you.
@@ -203,7 +180,6 @@ void readSensors() {
   Serial.println(tempLevel);
   Serial.print("Temperature in Degrees: ");
   Serial.println(degreesF);
-  // lightLevel = tuneLightLevel(lightLevel);
 }
 
 // Precursor to magic
@@ -219,8 +195,7 @@ void setup() {
 void loop() {
   if (millis() - timer >= timeDelay) {
     readSensors();
-    postData();
-//    sendValues();
+//    postData(testData);
     timer = millis();
   }
 }
