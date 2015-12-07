@@ -17,9 +17,10 @@ float tempLevel, lastTempF, degreesF;
 
 // Ethernet Shield vars
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x0F, 0x60, 0x8E };
-char server[] = "httpbin.org";
+char server[] = "requestb.in";
 //int serverPort = 80;
 //char pageName[] = "/r4sgsfr4";
+String data = "chicken=Drumstick";
 
 IPAddress ip(192, 168, 75, 246);
 EthernetClient client;
@@ -80,12 +81,15 @@ byte postData() {
   Serial.print(F("connecting..."));
 
   if(client.connect(server,80)) {
-    client.println("POST /status/418 HTTP/1.1");
+    client.println("POST /r4sgsfr4 HTTP/1.1");
     client.print("Host: ");
     client.println(server);
     client.println("User-Agent: Arduino/1.0");
     client.println("Connection: close");
+    client.print("Content-Length: ");
+    client.println(data.length());
     client.println();
+    client.println(data);
   }
   else {
     Serial.println(F("Connection Failed"));
