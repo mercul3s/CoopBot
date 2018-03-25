@@ -8,8 +8,8 @@ const int inB = 12;
 const int topSwitch = 6;
 
 // WIFI setup
-const char mySSID[] = "SSID";
-const char myPSK[] = "PASSWORD";
+const char mySSID[] = "Puppet Guest";
+const char myPSK[] = "argon4949";
 
 // State variables
 int topSwitchState, bottomSwitchState;
@@ -42,6 +42,8 @@ void setup() {
   pinMode(topSwitch, INPUT);
   digitalWrite(topSwitch, HIGH);
   Serial.begin(9600);
+  initializeWifi();
+  connectWifi();
 }
 
 
@@ -71,6 +73,23 @@ void debounceReedSwitch(int switchPin, int switchState) {
   }
 }
 
+
+void initializeWifi()
+{
+  // esp8266.begin() verifies that the ESP8266 is operational
+  // and sets it up for the rest of the sketch.
+  // It returns either true or false -- indicating whether
+  // communication was successul or not.
+  // true
+  int test = esp8266.begin();
+  if (test != true)
+  {
+    Serial.println(F("Error talking to ESP8266."));
+    errorLoop(test);
+  }
+  Serial.println(F("ESP8266 Shield Present"));
+}
+
 // Connect to wifi ssid. Ensure that the shield is in "station" mode so it only connects to wifi,
 // not acting as an access point.
 void connectWifi()
@@ -94,6 +113,7 @@ void connectWifi()
   // connected. 0 indicates disconnected. (Negative values
   // equate to communication errors.)
   retVal = esp8266.status();
+
   if (retVal <= 0)
   {
     Serial.print(F("Connecting to "));
@@ -111,6 +131,10 @@ void connectWifi()
       errorLoop(retVal);
     }
   }
+
+  IPAddress myIP = esp8266.localIP();
+
+  Serial.print(F("My IP: ")); Serial.println(myIP);
 }
 
 // errorLoop prints an error code, then loops forever.
@@ -149,6 +173,5 @@ void doorCheck() {
 }
 
 void loop() {
-  connectWifi();
   //debounceReedSwitch();
 }
