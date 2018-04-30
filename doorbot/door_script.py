@@ -36,6 +36,14 @@ def check_switch_states():
     elif top_read_data == 1 and bottom_read_data == 0:
         door_state = "CLOSED"
 
+def debounce_reed_switch(pin_num):
+    switch_val1 = gpio.input(pin_num)
+    time.sleep(.01)
+    switch_val2 = gpio.input(pin_num)
+    if switch_val1 == switch_val2:
+            
+
+
 def loop_read():
     while True:
         check_switch_states()
