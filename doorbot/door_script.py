@@ -21,6 +21,13 @@ def setup():
 # http://raspi.tv/2013/how-to-use-interrupts-with-python-on-the-raspberry-pi-and-rpi-gpio-part-2
 # http://raspi.tv/2013/how-to-use-interrupts-with-python-on-the-raspberry-pi-and-rpi-gpio-part-3
 
+# Switch debouncing resources:
+# https://raspberrypihobbyist.blogspot.com/2014/11/debouncing-gpio-input.html
+# https://www.youtube.com/watch?v=Y86-t9j6doo
+# https://www.allaboutcircuits.com/technical-articles/switch-bounce-how-to-deal-with-it/
+# https://hackaday.com/2015/12/09/embed-with-elliot-debounce-your-noisy-buttons-part-i/
+# https://www.raspberrypi.org/forums/viewtopic.php?t=134394
+
 def open():
     print "opening door"
     gpio.output(24, gpio.HIGH)
